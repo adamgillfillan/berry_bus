@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="11.5.1">
+  <zoom_level>10</zoom_level>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>180</x>
+      <y>120</y>
+      <w>160</w>
+      <h>130</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Bus Class&gt;&gt;
+--
+- xcord: Long
+- ycord: Long
+--
+#beginTracking()
+#endTracking()
+#getLocation()
+#sendLocation()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>410</x>
+      <y>140</y>
+      <w>150</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;User Class&gt;&gt;
+--
+- Busses Array : Bus
+--
+#trackBusses()
+#displayMap()</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

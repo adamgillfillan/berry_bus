@@ -1,0 +1,175 @@
+<script>
+
+//Change these latitude and longitude variables to change 
+//where the map is initially centered on the client map page
+var	centerLatitude = 34.289436;
+var centerLongitude = -85.189464;
+
+</script>
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Map &middot; Berry Bus</title>
+    <meta name="description" content="View Map">
+    <meta name="author" content="Berry Bus">
+	<link rel="shortcut icon" href="main.png">
+
+    <!-- Styles -->
+    <link href="../../assets/css/bootstrap.css" rel="stylesheet">
+	<!--<link href="../../assets/css/bootstrap-min.css" rel="stylesheet">-->
+	<link rel="stylesheet" type="text/css" href="mapStyle.css" />
+	<style type="text/css">
+      body {
+        height:100%;
+	    width:auto;
+      }
+      #map img {
+        max-width: none;
+      }
+      #map label {
+        width: auto;
+        display: inline;
+      }
+    </style>
+	
+	<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+	<script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+	<!--<script src="https://raw.github.com/HPNeo/gmaps/master/gmaps.js"></script>-->
+	<script src="gmaps.js"></script>
+
+	<meta name="viewport" content="width=device-width">
+</head>
+
+<body>
+
+	
+	<div class="navbar navbar-inverse">
+      <div class="navbar-inner">
+        <div class="container" style="text-align:center;">
+		  
+		  <div style="display:inline;">
+			<form style="display:inline;" action="../index.html">
+				<button class="btn btn-success" href="../index.html">Home</a>
+			</form>
+		  </div>
+		  
+		  <div class="legend" style="display:inline;">
+			<button type="button" id="pop" href="#" class="btn btn-danger" data-toggle="popover" data-placement="bottom" data-original-title="Buses">Legend</button>	
+		  </div>
+		  
+		  
+		  <div class="nav-collapse collapse">
+			<h5 id="message"></h5>
+		  </div>
+		
+		  <!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>	
+	
+	<div id="map"></div>
+	
+<script>
+
+//local map variable
+var map;
+
+setTimeout(getBusInfo,1000);
+setTimeout(getLegendInfo,1000);
+
+//gets the bus info from the server every 1 seconds
+function getBusInfo(){
+        jQuery.ajax({
+            type: "GET",
+            url: "getBusLocation.php",
+            cache: false,
+			dataType: "json",
+			success: function(data) { updateLocation(data);
+										setTimeout(getBusInfo,1000);}
+        }).fail(function() { /*alert("error");*/ });
+}
+
+
+//displays GPS coordinates on page
+function updateLocation(data) {	
+	var message = document.getElementById("message");
+	map.removeMarkers();
+	message.innerHTML = "";
+	
+	for(var i=0;i<data.length-1;i++){
+		map.addMarker({ lat: data[i].latitude,
+		lng: data[i].longitude,
+		icon: data[i].marker,
+		title: data[i].type });	
+	}
+
+	if(data[data.length-1]){
+		message.innerHTML += "<p class='text-error'>Alert: " + data[data.length-1] + "</p>";
+	}	
+}
+
+
+//gets the bus info from the server every 2 seconds
+function getLegendInfo(){
+		jQuery.ajax({
+			type: "GET", 
+			url:  "../legend.php", 
+			cache: false,
+		dataType: "json",
+		success: function(data) { updateLegend(data);
+								  setTimeout(getLegendInfo,1000);}
+		}).fail(function() { /*alert("error");*/ });
+}
+
+var legend;
+
+//displays legend on page
+function updateLegend(data) {
+		legend = "";
+		
+		legend = "<table class='table'> <thead><tr><th>Marker</th><th>Route</th><th>Updated</th></tr></thead><tbody>";
+		
+		for(var i=0;i<data.length-1;i++){				
+			legend += "<tr><td><img src = '" + data[i].marker + "' /></td><td>" + data[i].type + "</td><td>" + data[i].timestamp + "</td></tr>";
+		}
+
+		legend += "</tbody></table>";
+		
+		$("#pop").popover({html:true,content: function(){ return legend;}});
+		
+}
+
+
+//creates map and centers it on given coords
+$(document).ready(function(){
+map = new GMaps({
+   div: '#map',
+   lat: centerLatitude,	
+   lng: centerLongitude,
+   zoom: 15
+  });
+});
+
+</script>
+	<!-- Javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="../../assets/js/jquery.js"></script>
+    <script src="../../assets/js/bootstrap-transition.js"></script>
+    <script src="../../assets/js/bootstrap-alert.js"></script>
+    <script src="../../assets/js/bootstrap-modal.js"></script>
+    <script src="../../assets/js/bootstrap-dropdown.js"></script>
+    <script src="../../assets/js/bootstrap-scrollspy.js"></script>
+    <script src="../../assets/js/bootstrap-tab.js"></script>
+    <script src="../../assets/js/bootstrap-tooltip.js"></script>
+    <script src="../../assets/js/bootstrap-popover.js"></script>
+    <script src="../../assets/js/bootstrap-button.js"></script>
+    <script src="../../assets/js/bootstrap-collapse.js"></script>
+    <script src="../../assets/js/bootstrap-carousel.js"></script>
+    <script src="../../assets/js/bootstrap-typeahead.js"></script>
+</body>
+</html>
